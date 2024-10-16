@@ -1,0 +1,36 @@
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+
+export type RestuarantDocument = Restaurant & Document;
+
+export enum Category {
+  FAST_FOOD = 'Fast food',
+  CAFE = 'Cafe',
+  FINE_DINING = 'Fine dining',
+}
+
+@Schema()
+export class Restaurant {
+  @Prop()
+  name: string;
+
+  @Prop()
+  description: string;
+
+  @Prop()
+  images?: object[];
+
+  @Prop()
+  address: string;
+
+  @Prop()
+  phone: number;
+
+  @Prop()
+  email: string;
+
+  @Prop()
+  category: Category;
+}
+
+export const Restaurantchema = SchemaFactory.createForClass(Restaurant);
