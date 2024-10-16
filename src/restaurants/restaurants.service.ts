@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Restaurant } from './schemas/restaurants.schema';
 import { Model } from 'mongoose';
+import { Query } from 'src/utils/type';
 
 @Injectable()
 export class RestaurantService {
@@ -10,8 +11,22 @@ export class RestaurantService {
     private readonly restuarantModel: Model<Restaurant>,
   ) {}
 
-  async findAll(): Promise<Restaurant[]> {
-    return this.restuarantModel.find();
+  async findAll(query: Query): Promise<Restaurant[]> {
+    const resultsPerPage = 5; // Hardcoded for now
+    const currentPage = query.page ? Number(query.page) : 1;
+    const skip = resultsPerPage * (currentPage - 1);
+    const keyword = query.keyword
+      ? {
+          name: {
+            $regex: query.keyword,
+            $options: 'i',
+          },
+        }
+      : {};
+    return this.restuarantModel
+      .find({ ...keyword })
+      .limit(resultsPerPage)
+      .skip(skip);
   }
 
   async create(restaurant: Restaurant): Promise<Restaurant> {
