@@ -7,7 +7,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Restaurant } from './schemas/restaurants.schema';
 import mongoose, { Model } from 'mongoose';
 import { Query } from 'src/utils/type';
-import GeoCoderUtil from 'src/utils/geoCoder';
+import GeoCoder from 'src/utils/geoCoder';
+import FileUpload from 'src/utils/fileUpload';
 
 @Injectable()
 export class RestaurantService {
@@ -35,9 +36,7 @@ export class RestaurantService {
   }
 
   async create(restaurant: Restaurant): Promise<Restaurant> {
-    const location = await GeoCoderUtil.getRestaurantLocation(
-      restaurant.address,
-    );
+    const location = await GeoCoder.getRestaurantLocation(restaurant.address);
     const newRestaurant = Object.assign(restaurant, { location });
     return this.restuarantModel.create(newRestaurant);
   }
@@ -65,5 +64,29 @@ export class RestaurantService {
     const restaurant = await this.restuarantModel.findById(id);
     if (!restaurant) throw new NotFoundException('Restaurant not found');
     return this.restuarantModel.findByIdAndDelete(id);
+  }
+
+  async uploadImages(id: string, files: any[]) {
+    const isValid = mongoose.isValidObjectId(id);
+    if (!isValid) throw new BadRequestException('Invalid MongoDB id');
+    const restaurant = await this.restuarantModel.findById(id);
+    if (!restaurant) throw new NotFoundException('Restaurant not found');
+    const images = await FileUpload.upload(files);
+    return await this.restuarantModel.findByIdAndUpdate(
+      id,
+      {
+        images: images as Object[],
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+  }
+
+  async deleteImages(images: any[]) {
+    if (images.length === 0) return true;
+    const res = await FileUpload.deleteImages(images);
+    return res;
   }
 }

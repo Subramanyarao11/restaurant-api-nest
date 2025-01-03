@@ -1,6 +1,6 @@
 const nodeGeoCoder = require('node-geocoder');
 import { Location } from '../restaurants/schemas/location.schema';
-export default class GeoCoderUtil {
+export default class GeoCoder {
   static async getRestaurantLocation(address) {
     try {
       const options = {
