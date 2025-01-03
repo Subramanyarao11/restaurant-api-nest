@@ -9,6 +9,7 @@ import mongoose, { Model } from 'mongoose';
 import { Query } from 'src/utils/type';
 import GeoCoder from 'src/utils/geoCoder';
 import FileUpload from 'src/utils/fileUpload';
+import { User } from 'src/auth/schemas/user.schema';
 
 @Injectable()
 export class RestaurantService {
@@ -35,9 +36,12 @@ export class RestaurantService {
       .skip(skip);
   }
 
-  async create(restaurant: Restaurant): Promise<Restaurant> {
+  async create(restaurant: Restaurant, user: User): Promise<Restaurant> {
     const location = await GeoCoder.getRestaurantLocation(restaurant.address);
-    const newRestaurant = Object.assign(restaurant, { location });
+    const newRestaurant = Object.assign(restaurant, {
+      user: user._id,
+      location,
+    });
     return this.restuarantModel.create(newRestaurant);
   }
 

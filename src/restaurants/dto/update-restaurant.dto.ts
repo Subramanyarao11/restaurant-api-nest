@@ -4,8 +4,10 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
+  IsEmpty,
 } from 'class-validator';
 import { Category } from '../schemas/restaurants.schema';
+import { User } from 'src/auth/schemas/user.schema';
 
 export class UpdateRestaurantDto {
   @IsOptional()
@@ -33,4 +35,7 @@ export class UpdateRestaurantDto {
   @IsOptional()
   @IsEnum(Category, { message: 'Invalid category' })
   readonly category: Category;
+
+  @IsEmpty({ message: 'User is required' })
+  readonly user: User;
 }
