@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { Location } from './location.schema';
 
 export type RestuarantDocument = Restaurant & Document;
 
@@ -31,6 +32,9 @@ export class Restaurant {
 
   @Prop()
   category: Category;
+
+  @Prop({ type: Object, ref: 'Location' })
+  location?: Location;
 }
 
 export const Restaurantchema = SchemaFactory.createForClass(Restaurant);

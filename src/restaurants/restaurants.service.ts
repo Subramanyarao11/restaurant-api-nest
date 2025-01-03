@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Restaurant } from './schemas/restaurants.schema';
 import mongoose, { Model } from 'mongoose';
 import { Query } from 'src/utils/type';
+import GeoCoderUtil from 'src/utils/geoCoder';
 
 @Injectable()
 export class RestaurantService {
@@ -34,7 +35,11 @@ export class RestaurantService {
   }
 
   async create(restaurant: Restaurant): Promise<Restaurant> {
-    return this.restuarantModel.create(restaurant);
+    const location = await GeoCoderUtil.getRestaurantLocation(
+      restaurant.address,
+    );
+    const newRestaurant = Object.assign(restaurant, { location });
+    return this.restuarantModel.create(newRestaurant);
   }
 
   async findOne(id: string): Promise<Restaurant> {
