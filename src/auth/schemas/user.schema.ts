@@ -4,7 +4,9 @@ export enum UserRoles {
   ADMIN = 'admin',
   USER = 'user',
 }
-@Schema()
+@Schema({
+  timestamps: true,
+})
 export class User extends Document {
   @Prop()
   name: string;
